@@ -11,8 +11,8 @@ class AddContactPage extends StatefulWidget {
 }
 
 class _AddContactPage extends State<AddContactPage> {
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController jobController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class _AddContactPage extends State<AddContactPage> {
               width: MediaQuery.of(context).size.width * .8,
               height: 50,
               child: TextField(
-                controller: firstNameController,
+                controller: nameController,
                 style: const TextStyle(
                   fontSize: 15,
                   color: Colors.black,
@@ -45,7 +45,7 @@ class _AddContactPage extends State<AddContactPage> {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
-                  labelText: 'First Name',
+                  labelText: 'Name',
                   labelStyle: const TextStyle(color: Color(0xFF32BAA5)),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -67,7 +67,7 @@ class _AddContactPage extends State<AddContactPage> {
               width: MediaQuery.of(context).size.width * .8,
               height: 50,
               child: TextField(
-                controller: lastNameController,
+                controller: jobController,
                 style: const TextStyle(
                   fontSize: 15,
                   color: Colors.black,
@@ -75,7 +75,7 @@ class _AddContactPage extends State<AddContactPage> {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
-                  labelText: 'Last Name',
+                  labelText: 'Job',
                   labelStyle: const TextStyle(color: Color(0xFF32BAA5)),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -120,21 +120,25 @@ class _AddContactPage extends State<AddContactPage> {
   }
 
   Future<void> submitContact() async {
-    //Get the data from form
-    final firstName = firstNameController.text;
-    final lastName = lastNameController.text;
-    final body = {
-      "name": firstName,
-      "firstname": lastName,
-    };
-    //submit data to the server
+    // Get the data from the form
+    final name = nameController.text;
+    final job = jobController.text;
+
+    if (name.isEmpty || job.isEmpty) {
+      showErrorMessage('Please fill in all fields');
+      return;
+    }
+
+    final body = {"name": name, "job": job};
+
+    // Submit data to the server
     final url = 'https://reqres.in/api/users';
     final uri = Uri.parse(url);
     final response = await http.post(uri, body: jsonEncode(body));
 
     if (response.statusCode == 201) {
-      firstNameController.text = '';
-      lastNameController.text = '';
+      nameController.text = '';
+      jobController.text = '';
 
       showSuccessMessage('Contact created');
     } else {
