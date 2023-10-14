@@ -54,7 +54,7 @@ class _EditContactPage extends State<EditContactPage> {
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: const Color(0xFF32BAA5),
-                  width: 5.0, // Border width
+                  width: 5.0,
                 ),
               ),
               child: ClipRRect(

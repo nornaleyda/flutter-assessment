@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/add_contact.dart';
 import 'package:flutter_application_1/pages/edit_contact.dart';
+import 'package:flutter_application_1/pages/profile.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,7 +16,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage> {
   bool isLoading = true;
+  bool showFavoritesOnly = false;
+
   List data = [];
+  List filteredData = [];
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -37,7 +43,10 @@ class _HomePage extends State<HomePage> {
           backgroundColor: const Color(0xFF32BAA5),
           actions: [
             IconButton(
-              icon: Icon(Icons.refresh),
+              icon: Icon(
+                Icons.refresh,
+                color: Colors.white,
+              ),
               onPressed: () {
                 fetchContact();
                 setState(() {});
@@ -45,62 +54,159 @@ class _HomePage extends State<HomePage> {
             ),
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: fetchContact,
-          child: ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              final item = data[index] as Map;
-              final id = item['id'] as int;
-              return Slidable(
-                endActionPane: ActionPane(
-                  motion: ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                      onPressed: ((context) {
-                        //edit
-                        navigateToEditPage(item);
-                      }),
-                      backgroundColor: const Color(0xFFEBF8F6),
-                      icon: Icons.edit,
-                      foregroundColor: const Color(0xFFF2C94C),
+        body: Column(
+          children: [
+            Container(
+              color: Color(0xFFE5E5E5),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (query) {
+                    filterContacts(query);
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    labelText: '  Search Contact',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
                     ),
-                    SlidableAction(
-                      onPressed: ((context) {
-                        //delete
-                        deleteById(id);
-                      }),
-                      backgroundColor: const Color(0xFFEBF8F6),
-                      icon: Icons.delete,
-                      foregroundColor: const Color(0xFFFA0F0F),
+                    suffixIcon: const Icon(
+                      Icons.search,
+                      color: Colors.grey,
                     ),
-                  ],
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: const BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: const BorderSide(color: Colors.white),
+                    ),
+                  ),
                 ),
-                child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, bottom: 10.0),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(25),
-                          child: Image.network(
-                            item['avatar'],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        showFavoritesOnly = false;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: !showFavoritesOnly
+                            ? Color(0xFF32BAA5)
+                            : Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                    child: Text(
+                      "All",
+                      style: TextStyle(
+                          color:
+                              showFavoritesOnly ? Colors.grey : Colors.white),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        showFavoritesOnly = true;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: showFavoritesOnly
+                            ? Color(0xFF32BAA5)
+                            : Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                    child: Text(
+                      "Favorite",
+                      style: TextStyle(
+                          color:
+                              showFavoritesOnly ? Colors.white : Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: fetchContact,
+                child: ListView.builder(
+                  itemCount: filteredData.length,
+                  itemBuilder: (context, index) {
+                    if (filteredData.isEmpty) {
+                      return Center(
+                        child: Text(
+                            "No contacts found"), // Display a message when no contacts match the search
+                      );
+                    }
+                    final item = filteredData[index] as Map;
+                    final id = item['id'] as int;
+                    return Column(
+                      children: [
+                        Slidable(
+                          endActionPane: ActionPane(
+                            motion: ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: ((context) {
+                                  //edit
+                                  navigateToProfilePage(item);
+                                }),
+                                backgroundColor: const Color(0xFFEBF8F6),
+                                icon: Icons.edit,
+                                foregroundColor: const Color(0xFFF2C94C),
+                              ),
+                              SlidableAction(
+                                onPressed: ((context) {
+                                  //delete
+                                  deleteById(id);
+                                }),
+                                backgroundColor: const Color(0xFFEBF8F6),
+                                icon: Icons.delete,
+                                foregroundColor: const Color(0xFFFA0F0F),
+                              ),
+                            ],
                           ),
+                          child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 15.0, right: 15.0, bottom: 10.0),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(25),
+                                    child: Image.network(
+                                      item['avatar'],
+                                    ),
+                                  ),
+                                ),
+                                title: Text(
+                                  '${item['first_name']} ${item['last_name']}',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                                subtitle: Text(item['email']),
+                                trailing: Icon(
+                                  Icons.send,
+                                  color: const Color(0xFF32BAA5),
+                                ),
+                              )),
                         ),
-                      ),
-                      title: Text(
-                        '${item['first_name']} ${item['last_name']}',
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      subtitle: Text(item['email']),
-                      trailing: Icon(
-                        Icons.send,
-                        color: const Color(0xFF32BAA5),
-                      ),
-                    )),
-              );
-            },
-          ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
         floatingActionButton: FloatingActionButton.extended(
           backgroundColor: const Color(0xFF32BAA5),
@@ -112,42 +218,118 @@ class _HomePage extends State<HomePage> {
         ));
   }
 
-  void navigateToEditPage(Map item) {
+  void filterContacts(String query) {
+    setState(() {
+      final trimmedQuery = query.trim();
+      if (trimmedQuery.isEmpty) {
+        if (showFavoritesOnly) {
+          // Show only favorite contacts
+          filteredData = data.where((item) => item['isFavorite']).toList();
+        } else {
+          // Show all contacts
+          filteredData = List.from(data);
+        }
+      } else {
+        // Filter contacts by first_name, last_name, or first_name and last_name together
+        filteredData = data
+            .where((item) => [
+                  item['first_name'],
+                  item['last_name'],
+                  '${item['first_name']} ${item['last_name']}',
+                ].any((name) =>
+                    name.toLowerCase().contains(trimmedQuery.toLowerCase())))
+            .toList();
+        if (showFavoritesOnly) {
+          // If we are filtering and showing favorites, apply the favorite filter as well
+          filteredData =
+              filteredData.where((item) => item['isFavorite']).toList();
+        }
+      }
+    });
+  }
+
+  void navigateToProfilePage(Map item) {
+    searchController.clear();
+
     final route = MaterialPageRoute(
-      builder: (context) => EditContactPage(update: item),
+      builder: (context) => ProfilePage(update: item),
     );
     Navigator.push(context, route);
     setState(() {
-      // isLoading = true;
+      isLoading = true;
     });
     fetchContact();
   }
 
   void navigateToAddPage() {
+    searchController.clear();
+
     final route = MaterialPageRoute(builder: (context) => AddContactPage());
     Navigator.push(context, route);
   }
 
   Future<void> deleteById(int id) async {
-    //Delete the item
-    final url = 'https://reqres.in/api/users/$id';
-    final uri = Uri.parse(url);
-    final response = await http.delete(uri);
-    print(response.statusCode);
-    if (response.statusCode == 204) {
-      //Remove item from the list
-      final filtered = data.where((element) => element['id'] != id).toList();
-      setState(() {
-        data = filtered;
-      });
-    } else {
-      showErrorMessage('Deletion Failed');
-    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            'Are you sure you want to delete this contact?',
+            textAlign: TextAlign.center, // Center the text
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(5.0), // Adjust the corner radius
+            side: BorderSide(color: Colors.white, width: 2.0), // Add a border
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center, // Center the buttons
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop(); // Close the dialog
+                    // Delete the contact
+                    final url = 'https://reqres.in/api/users/$id';
+                    final uri = Uri.parse(url);
+                    final response = await http.delete(uri);
+                    print(response.statusCode);
+                    print(id);
+                    if (response.statusCode == 204) {
+                      final filtered =
+                          data.where((element) => element['id'] != id).toList();
+                      setState(() {
+                        filteredData = filtered;
+                      });
+                    } else {
+                      showErrorMessage('Deletion Failed');
+                    }
+                  },
+                  child: Text(
+                    'Yes',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text(
+                    'No',
+                    style: TextStyle(color: Color(0xFF32BAA5)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> fetchContact() async {
     setState(() {
-      isLoading = false;
+      isLoading = true;
     });
 
     final url = 'https://reqres.in/api/users?page=1';
@@ -158,11 +340,11 @@ class _HomePage extends State<HomePage> {
       final result = json['data'] as List;
       setState(() {
         data = result;
+        filteredData = result; // Initialize filteredData with the same data
       });
+    } else {
+      showErrorMessage('Unable to sync contact');
     }
-    // else {
-    //   showErrorMessage('Unable to sync contact');
-    // }
     setState(() {
       isLoading = false;
     });
