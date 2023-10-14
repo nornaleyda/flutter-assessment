@@ -3,21 +3,31 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class AddContactPage extends StatefulWidget {
-  const AddContactPage({super.key});
+class EditContactPage extends StatefulWidget {
+  final Map? update;
+  const EditContactPage({Key? key, this.update});
 
   @override
-  State<AddContactPage> createState() => _AddContactPage();
+  State<EditContactPage> createState() => _EditContactPage();
 }
 
-class _AddContactPage extends State<AddContactPage> {
+class _EditContactPage extends State<EditContactPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
+  late String avatarUrl;
 
   @override
   void initState() {
     super.initState();
+    final update = widget.update;
+    final firstName = update!['first_name'];
+    final lastName = update['last_name'];
+    final email = update['email'];
+    avatarUrl = update['avatar'];
+    firstNameController.text = firstName;
+    lastNameController.text = lastName;
+    emailController.text = email;
   }
 
   @override
@@ -39,9 +49,20 @@ class _AddContactPage extends State<AddContactPage> {
             height: 40,
           ),
           Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: Image.network('https://reqres.in/img/faces/11-image.jpg'),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFF32BAA5),
+                  width: 5.0, // Border width
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Image(
+                  image: NetworkImage(avatarUrl),
+                ),
+              ),
             ),
           ),
           SizedBox(
@@ -142,7 +163,7 @@ class _AddContactPage extends State<AddContactPage> {
               width: MediaQuery.of(context).size.width * .8,
               height: 50,
               child: ElevatedButton(
-                onPressed: submitContact,
+                onPressed: updateContact,
                 style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
@@ -164,8 +185,11 @@ class _AddContactPage extends State<AddContactPage> {
     );
   }
 
-  Future<void> submitContact() async {
+  Future<void> updateContact() async {
     // Get the data from the form
+    final update = widget.update;
+
+    final id = update!['id'];
     final firstName = firstNameController.text;
     final lastName = lastNameController.text;
     final email = emailController.text;
@@ -177,21 +201,18 @@ class _AddContactPage extends State<AddContactPage> {
     };
 
     // Submit data to the server
-    final url = 'https://reqres.in/api/users';
+    final url = 'https://reqres.in/api/users/$id';
     final uri = Uri.parse(url);
-    final response = await http.post(uri, body: jsonEncode(body));
+    final response = await http.put(uri, body: jsonEncode(body));
 
-    if (response.statusCode == 201) {
-      firstNameController.text = '';
-      lastNameController.text = '';
-      emailController.text = '';
-
+    if (response.statusCode == 200) {
       print(response.statusCode);
       print(response.body);
-
-      showSuccessMessage('Contact created');
+      showSuccessMessage('Contact updated');
     } else {
-      showErrorMessage('Contact failed to create');
+      print(response.statusCode);
+      print(response.body);
+      showErrorMessage('Contact failed to update');
     }
   }
 
