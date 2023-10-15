@@ -51,8 +51,6 @@ class _ProfilePage extends State<ProfilePage> {
                   onPressed: () {
                     if (widget.update != null) {
                       navigateToEditPage(widget.update!);
-                    } else {
-                      // Show Error
                     }
                   },
                   child: Text(

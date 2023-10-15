@@ -27,7 +27,17 @@ class _HomePage extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    fetchContact();
+    final provider = Provider.of<FavoriteProvider>(context, listen: false);
+    fetchContact(provider);
+
+    provider.addListener(updateFavorites);
+  }
+
+  @override
+  void dispose() {
+    final provider = Provider.of<FavoriteProvider>(context, listen: false);
+    provider.removeListener(updateFavorites);
+    super.dispose();
   }
 
   @override
@@ -50,7 +60,7 @@ class _HomePage extends State<HomePage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                fetchContact();
+                fetchContact(provider);
                 setState(() {});
               },
             ),
@@ -91,7 +101,8 @@ class _HomePage extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(25.0),
+              padding:
+                  const EdgeInsets.only(top: 20.0, right: 25.0, left: 25.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -99,7 +110,9 @@ class _HomePage extends State<HomePage> {
                     onPressed: () {
                       setState(() {
                         showFavoritesOnly = false;
+                        filteredData = data;
                       });
+                      fetchContact(provider);
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: !showFavoritesOnly
@@ -108,20 +121,22 @@ class _HomePage extends State<HomePage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0))),
                     child: Text(
-                      "All",
+                      'All',
                       style: TextStyle(
                           color:
                               showFavoritesOnly ? Colors.grey : Colors.white),
                     ),
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
+                  SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
                         showFavoritesOnly = true;
+                        filteredData = data.where((item) {
+                          return provider.isExist(item['id']);
+                        }).toList();
                       });
+                      fetchContact(provider);
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: showFavoritesOnly
@@ -130,7 +145,7 @@ class _HomePage extends State<HomePage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0))),
                     child: Text(
-                      "Favorite",
+                      'Favorite',
                       style: TextStyle(
                           color:
                               showFavoritesOnly ? Colors.white : Colors.grey),
@@ -140,71 +155,78 @@ class _HomePage extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: fetchContact,
-                child: ListView.builder(
-                  itemCount: filteredData.length,
-                  itemBuilder: (context, index) {
-                    final item = filteredData[index] as Map;
-                    final id = item['id'] as int;
-                    return Column(
-                      children: [
-                        Slidable(
-                          endActionPane: ActionPane(
-                            motion: ScrollMotion(),
-                            children: [
-                              SlidableAction(
-                                onPressed: ((context) {
-                                  //edit
-                                  navigateToProfilePage(item);
-                                }),
-                                backgroundColor: const Color(0xFFEBF8F6),
-                                icon: Icons.edit,
-                                foregroundColor: const Color(0xFFF2C94C),
-                              ),
-                              SlidableAction(
-                                onPressed: ((context) {
-                                  //delete
-                                  deleteById(id);
-                                }),
-                                backgroundColor: const Color(0xFFEBF8F6),
-                                icon: Icons.delete,
-                                foregroundColor: const Color(0xFFFA0F0F),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 15.0, right: 15.0, bottom: 10.0),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(25),
-                                    child: Image.network(
-                                      item['avatar'],
-                                    ),
+              child: ListView.builder(
+                itemCount: filteredData.length,
+                itemBuilder: (context, index) {
+                  final item = filteredData[index] as Map;
+                  final id = item['id'] as int;
+                  return Column(
+                    children: [
+                      Slidable(
+                        endActionPane: ActionPane(
+                          motion: ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: ((context) {
+                                //edit contact
+                                navigateToProfilePage(item);
+                              }),
+                              backgroundColor: const Color(0xFFEBF8F6),
+                              icon: Icons.edit,
+                              foregroundColor: const Color(0xFFF2C94C),
+                            ),
+                            SlidableAction(
+                              onPressed: ((context) {
+                                //delete contact
+                                deleteById(id);
+                              }),
+                              backgroundColor: const Color(0xFFEBF8F6),
+                              icon: Icons.delete,
+                              foregroundColor: const Color(0xFFFA0F0F),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 15.0, right: 15.0, bottom: 10.0),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: Image.network(
+                                    item['avatar'],
                                   ),
                                 ),
-                                title: Text(
-                                  '${item['first_name']} ${item['last_name']}',
-                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                ),
-                                subtitle: Text(item['email']),
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    provider.toggleFavorite(id);
-                                  },
-                                  icon: provider.isExist(id)
-                                      ? Icon(Icons.star, color: Colors.yellow)
-                                      : Icon(Icons.star_outline,
-                                          color: const Color(0xFF32BAA5)),
-                                ),
-                              )),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                              ),
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${item['first_name']} ${item['last_name']}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      provider.toggleFavorite(id);
+
+                                      updateFavorites();
+                                    },
+                                    icon: provider.isExist(id)
+                                        ? Icon(Icons.star, color: Colors.yellow)
+                                        : Icon(Icons.star_outline,
+                                            color: const Color(0xFF32BAA5)),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Text(item['email']),
+                              trailing: Icon(Icons.send,
+                                  color: const Color(0xFF32BAA5)),
+                            )),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -219,30 +241,46 @@ class _HomePage extends State<HomePage> {
         ));
   }
 
+  // Update filteredData with favorites
+  void updateFavorites() {
+    final provider = Provider.of<FavoriteProvider>(context, listen: false);
+
+    setState(() {
+      if (showFavoritesOnly) {
+        filteredData = data.where((item) {
+          return provider.isExist(item['id']);
+        }).toList();
+      } else {
+        filteredData = data;
+      }
+    });
+  }
+
+  // search filter for the contact
   void filterContacts(String query) {
     setState(() {
-      final trimmedQuery = query.trim();
-      if (trimmedQuery.isEmpty) {
-        if (showFavoritesOnly) {
-          // Show only favorite contacts
-          filteredData = data.where((item) => item['isFavorite']).toList();
-        } else {
-          // Show all contacts
-          filteredData = List.from(data);
-        }
+      final trimmedQuery = query
+          .trim()
+          .toLowerCase(); // Convert the query to lowercase for case-insensitive search.
+      if (showFavoritesOnly) {
+        filteredData = data
+            .where((item) =>
+                item['isFavorite'] == true &&
+                (item['first_name'].toLowerCase().contains(trimmedQuery) ||
+                    item['last_name'].toLowerCase().contains(trimmedQuery) ||
+                    ('${item['first_name']} ${item['last_name']}')
+                        .toLowerCase()
+                        .contains(trimmedQuery)))
+            .toList();
       } else {
         filteredData = data
-            .where((item) => [
-                  item['first_name'],
-                  item['last_name'],
-                  '${item['first_name']} ${item['last_name']}',
-                ].any((name) =>
-                    name.toLowerCase().contains(trimmedQuery.toLowerCase())))
+            .where((item) =>
+                (item['first_name'].toLowerCase().contains(trimmedQuery) ||
+                    item['last_name'].toLowerCase().contains(trimmedQuery) ||
+                    ('${item['first_name']} ${item['last_name']}')
+                        .toLowerCase()
+                        .contains(trimmedQuery)))
             .toList();
-        if (showFavoritesOnly) {
-          filteredData =
-              filteredData.where((item) => item['isFavorite']).toList();
-        }
       }
     });
   }
@@ -254,10 +292,6 @@ class _HomePage extends State<HomePage> {
       builder: (context) => ProfilePage(update: item),
     );
     Navigator.push(context, route);
-    setState(() {
-      isLoading = true;
-    });
-    fetchContact();
   }
 
   void navigateToAddPage() {
@@ -267,6 +301,7 @@ class _HomePage extends State<HomePage> {
     Navigator.push(context, route);
   }
 
+  // Delete data
   Future<void> deleteById(int id) async {
     showDialog(
       context: context,
@@ -287,7 +322,6 @@ class _HomePage extends State<HomePage> {
                 TextButton(
                   onPressed: () async {
                     Navigator.of(context).pop();
-                    // Delete the contact
                     final url = 'https://reqres.in/api/users/$id';
                     final uri = Uri.parse(url);
                     final response = await http.delete(uri);
@@ -325,7 +359,8 @@ class _HomePage extends State<HomePage> {
     );
   }
 
-  Future<void> fetchContact() async {
+  // Get contact list from server
+  Future<void> fetchContact(FavoriteProvider provider) async {
     setState(() {
       isLoading = true;
     });
@@ -338,7 +373,13 @@ class _HomePage extends State<HomePage> {
       final result = json['data'] as List;
       setState(() {
         data = result;
-        filteredData = result; // Initialize filteredData with the same data
+        if (showFavoritesOnly) {
+          filteredData = result.where((item) {
+            return provider.isExist(item['id']);
+          }).toList();
+        } else {
+          filteredData = result;
+        }
       });
     } else {
       showErrorMessage('Unable to sync contact');

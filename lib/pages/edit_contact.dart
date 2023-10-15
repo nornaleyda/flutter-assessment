@@ -208,10 +208,12 @@ class _EditContactPage extends State<EditContactPage> {
     if (response.statusCode == 200) {
       print(response.statusCode);
       print(response.body);
+
       showSuccessMessage('Contact updated');
     } else {
       print(response.statusCode);
       print(response.body);
+
       showErrorMessage('Contact failed to update');
     }
   }

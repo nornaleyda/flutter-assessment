@@ -39,9 +39,21 @@ class _AddContactPage extends State<AddContactPage> {
             height: 40,
           ),
           Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: Image.network('https://reqres.in/img/faces/11-image.jpg'),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFF32BAA5),
+                  width: 5.0,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Image(
+                  image:
+                      NetworkImage('https://reqres.in/img/faces/11-image.jpg'),
+                ),
+              ),
             ),
           ),
           SizedBox(
@@ -191,6 +203,9 @@ class _AddContactPage extends State<AddContactPage> {
 
       showSuccessMessage('Contact created');
     } else {
+      print(response.statusCode);
+      print(response.body);
+
       showErrorMessage('Contact failed to create');
     }
   }
