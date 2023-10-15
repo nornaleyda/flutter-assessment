@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   final Map? update;
-  const ProfilePage({Key? key, this.update});
+  const ProfilePage({super.key, Key, this.update});
 
   @override
   State<ProfilePage> createState() => _ProfilePage();
@@ -30,7 +30,7 @@ class _ProfilePage extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Profile',
           style: TextStyle(
             color: Colors.white,
@@ -53,9 +53,9 @@ class _ProfilePage extends State<ProfilePage> {
                       navigateToEditPage(widget.update!);
                     }
                   },
-                  child: Text(
+                  child: const Text(
                     'Edit',
-                    style: TextStyle(color: const Color(0xFF32BAA5)),
+                    style: TextStyle(color: Color(0xFF32BAA5)),
                   ),
                 ),
               ),
@@ -78,39 +78,40 @@ class _ProfilePage extends State<ProfilePage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Center(
             child: Text(
-              '${firstName} ${lastName}',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+              '$firstName $lastName',
+              style:
+                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Container(
             height: 100,
-            color: Color(0xFFF1F1F1),
+            color: const Color(0xFFF1F1F1),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.mail_outlined,
                   color: Colors.grey,
                   size: 40,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(email,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18.0,
                     )),
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Center(
@@ -143,7 +144,7 @@ class _ProfilePage extends State<ProfilePage> {
                     ),
                   ),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0xFF32BAA5)),
+                      MaterialStateProperty.all<Color>(const Color(0xFF32BAA5)),
                 ),
                 child: const Text(
                   'Send Email',

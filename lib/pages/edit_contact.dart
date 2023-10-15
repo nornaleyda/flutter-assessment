@@ -5,7 +5,11 @@ import 'package:http/http.dart' as http;
 
 class EditContactPage extends StatefulWidget {
   final Map? update;
-  const EditContactPage({Key? key, this.update});
+  const EditContactPage({
+    super.key,
+    Key,
+    this.update,
+  });
 
   @override
   State<EditContactPage> createState() => _EditContactPage();
@@ -34,7 +38,7 @@ class _EditContactPage extends State<EditContactPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Profile',
           style: TextStyle(
             color: Colors.white,
@@ -45,7 +49,7 @@ class _EditContactPage extends State<EditContactPage> {
       ),
       body: ListView(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -65,7 +69,7 @@ class _EditContactPage extends State<EditContactPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -95,7 +99,7 @@ class _EditContactPage extends State<EditContactPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -125,7 +129,7 @@ class _EditContactPage extends State<EditContactPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -155,7 +159,7 @@ class _EditContactPage extends State<EditContactPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -171,7 +175,7 @@ class _EditContactPage extends State<EditContactPage> {
                     ),
                   ),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0xFF32BAA5)),
+                      MaterialStateProperty.all<Color>(const Color(0xFF32BAA5)),
                 ),
                 child: const Text(
                   'Done',
@@ -230,7 +234,7 @@ class _EditContactPage extends State<EditContactPage> {
     final snackBar = SnackBar(
       content: Text(
         message,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
       backgroundColor: Colors.red,
     );

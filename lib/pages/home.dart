@@ -45,7 +45,7 @@ class _HomePage extends State<HomePage> {
     final provider = Provider.of<FavoriteProvider>(context);
     return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'My Contacts',
             style: TextStyle(
               color: Colors.white,
@@ -55,7 +55,7 @@ class _HomePage extends State<HomePage> {
           backgroundColor: const Color(0xFF32BAA5),
           actions: [
             IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.refresh,
                 color: Colors.white,
               ),
@@ -69,7 +69,7 @@ class _HomePage extends State<HomePage> {
         body: Column(
           children: [
             Container(
-              color: Color(0xFFE5E5E5),
+              color: const Color(0xFFE5E5E5),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: TextField(
@@ -116,7 +116,7 @@ class _HomePage extends State<HomePage> {
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: !showFavoritesOnly
-                            ? Color(0xFF32BAA5)
+                            ? const Color(0xFF32BAA5)
                             : Colors.white,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0))),
@@ -127,7 +127,7 @@ class _HomePage extends State<HomePage> {
                               showFavoritesOnly ? Colors.grey : Colors.white),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
@@ -140,7 +140,7 @@ class _HomePage extends State<HomePage> {
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: showFavoritesOnly
-                            ? Color(0xFF32BAA5)
+                            ? const Color(0xFF32BAA5)
                             : Colors.white,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0))),
@@ -164,7 +164,7 @@ class _HomePage extends State<HomePage> {
                     children: [
                       Slidable(
                         endActionPane: ActionPane(
-                          motion: ScrollMotion(),
+                          motion: const ScrollMotion(),
                           children: [
                             SlidableAction(
                               onPressed: ((context) {
@@ -203,8 +203,8 @@ class _HomePage extends State<HomePage> {
                                 children: [
                                   Text(
                                     '${item['first_name']} ${item['last_name']}',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w500),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500),
                                   ),
                                   IconButton(
                                     onPressed: () {
@@ -213,15 +213,16 @@ class _HomePage extends State<HomePage> {
                                       updateFavorites();
                                     },
                                     icon: provider.isExist(id)
-                                        ? Icon(Icons.star, color: Colors.yellow)
-                                        : Icon(Icons.star_outline,
-                                            color: const Color(0xFF32BAA5)),
+                                        ? const Icon(Icons.star,
+                                            color: Colors.yellow)
+                                        : const Icon(Icons.star_outline,
+                                            color: Color(0xFF32BAA5)),
                                   ),
                                 ],
                               ),
                               subtitle: Text(item['email']),
-                              trailing: Icon(Icons.send,
-                                  color: const Color(0xFF32BAA5)),
+                              trailing: const Icon(Icons.send,
+                                  color: Color(0xFF32BAA5)),
                             )),
                       ),
                     ],
@@ -234,7 +235,7 @@ class _HomePage extends State<HomePage> {
         floatingActionButton: FloatingActionButton.extended(
           backgroundColor: const Color(0xFF32BAA5),
           onPressed: navigateToAddPage,
-          label: Icon(
+          label: const Icon(
             Icons.add,
             color: Colors.white,
           ),
@@ -297,7 +298,8 @@ class _HomePage extends State<HomePage> {
   void navigateToAddPage() {
     searchController.clear();
 
-    final route = MaterialPageRoute(builder: (context) => AddContactPage());
+    final route =
+        MaterialPageRoute(builder: (context) => const AddContactPage());
     Navigator.push(context, route);
   }
 
@@ -307,13 +309,13 @@ class _HomePage extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Text(
+          content: const Text(
             'Are you sure you want to delete this contact?',
             textAlign: TextAlign.center,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(color: Colors.white, width: 2.0),
+            side: const BorderSide(color: Colors.white, width: 2.0),
           ),
           actions: [
             Row(
@@ -337,7 +339,7 @@ class _HomePage extends State<HomePage> {
                       showErrorMessage('Deletion Failed');
                     }
                   },
-                  child: Text(
+                  child: const Text(
                     'Yes',
                     style: TextStyle(color: Colors.red),
                   ),
@@ -346,7 +348,7 @@ class _HomePage extends State<HomePage> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text(
+                  child: const Text(
                     'No',
                     style: TextStyle(color: Color(0xFF32BAA5)),
                   ),
@@ -365,7 +367,7 @@ class _HomePage extends State<HomePage> {
       isLoading = true;
     });
 
-    final url = 'https://reqres.in/api/users?page=1';
+    const url = 'https://reqres.in/api/users?page=1';
     final uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -393,7 +395,7 @@ class _HomePage extends State<HomePage> {
     final snackBar = SnackBar(
       content: Text(
         message,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
       backgroundColor: Colors.red,
     );

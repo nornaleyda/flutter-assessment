@@ -24,7 +24,7 @@ class _AddContactPage extends State<AddContactPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Profile',
           style: TextStyle(
             color: Colors.white,
@@ -35,7 +35,7 @@ class _AddContactPage extends State<AddContactPage> {
       ),
       body: ListView(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -49,14 +49,14 @@ class _AddContactPage extends State<AddContactPage> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: Image(
+                child: const Image(
                   image:
                       NetworkImage('https://reqres.in/img/faces/11-image.jpg'),
                 ),
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -86,7 +86,7 @@ class _AddContactPage extends State<AddContactPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -116,7 +116,7 @@ class _AddContactPage extends State<AddContactPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -146,7 +146,7 @@ class _AddContactPage extends State<AddContactPage> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Center(
@@ -162,7 +162,7 @@ class _AddContactPage extends State<AddContactPage> {
                     ),
                   ),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0xFF32BAA5)),
+                      MaterialStateProperty.all<Color>(const Color(0xFF32BAA5)),
                 ),
                 child: const Text(
                   'Done',
@@ -189,7 +189,7 @@ class _AddContactPage extends State<AddContactPage> {
     };
 
     // Submit data to the server
-    final url = 'https://reqres.in/api/users';
+    const url = 'https://reqres.in/api/users';
     final uri = Uri.parse(url);
     final response = await http.post(uri, body: jsonEncode(body));
 
@@ -222,7 +222,7 @@ class _AddContactPage extends State<AddContactPage> {
     final snackBar = SnackBar(
       content: Text(
         message,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
       backgroundColor: Colors.red,
     );
