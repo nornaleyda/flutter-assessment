@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/edit_contact.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   final Map? update;
@@ -120,15 +121,22 @@ class _ProfilePage extends State<ProfilePage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // final Uri emailLaunchUri = Uri(
-                  //   scheme: 'mailto',
-                  //   path: 'smith@example.com',
-                  //   query: encodeQueryParameters(<String, String>{
-                  //     'subject': 'Example Subject & Symbols are allowed!',
-                  //   }),
-                  // );
+                  String? encodeQueryParameters(Map<String, String> params) {
+                    return params.entries
+                        .map((MapEntry<String, String> e) =>
+                            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+                        .join('&');
+                  }
 
-                  // launchUrl(emailLaunchUri);
+                  final Uri emailLaunchUri = Uri(
+                    scheme: 'mailto',
+                    path: email,
+                    query: encodeQueryParameters(<String, String>{
+                      'subject': 'Example Subject & Symbols are allowed!',
+                    }),
+                  );
+
+                  launchUrl(emailLaunchUri);
                 },
                 style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
