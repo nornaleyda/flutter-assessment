@@ -1,11 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/add_contact.dart';
 import 'package:flutter_application_1/pages/edit_contact.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import 'package:http/http.dart' as http;
 
 class ProfilePage extends StatefulWidget {
   final Map? update;
@@ -57,7 +51,7 @@ class _ProfilePage extends State<ProfilePage> {
                     if (widget.update != null) {
                       navigateToEditPage(widget.update!);
                     } else {
-                      // Handle the case where widget.update is null, e.g., show an error message.
+                      // Show Error
                     }
                   },
                   child: Text(
@@ -74,7 +68,7 @@ class _ProfilePage extends State<ProfilePage> {
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: const Color(0xFF32BAA5),
-                  width: 5.0, // Border width
+                  width: 5.0,
                 ),
               ),
               child: ClipRRect(
@@ -89,17 +83,9 @@ class _ProfilePage extends State<ProfilePage> {
             height: 20,
           ),
           Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${firstName} ${lastName}'),
-                SizedBox(width: 10),
-                Icon(
-                  Icons.star_outline,
-                  // color: Colors.yellow,
-                  size: 30,
-                ),
-              ],
+            child: Text(
+              '${firstName} ${lastName}',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
             ),
           ),
           SizedBox(
@@ -109,20 +95,19 @@ class _ProfilePage extends State<ProfilePage> {
             height: 100,
             color: Color(0xFFF1F1F1),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-              crossAxisAlignment:
-                  CrossAxisAlignment.center, // Center horizontally
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Icon(
                   Icons.mail_outlined,
                   color: Colors.grey,
                   size: 40,
                 ),
-                SizedBox(
-                    height: 10), // Add some spacing between the icon and text
-                Text(
-                  email,
-                ),
+                SizedBox(height: 10),
+                Text(email,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                    )),
               ],
             ),
           ),

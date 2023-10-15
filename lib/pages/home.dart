@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/add_contact.dart';
-import 'package:flutter_application_1/pages/edit_contact.dart';
 import 'package:flutter_application_1/pages/profile.dart';
+import 'package:flutter_application_1/provider/provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,6 +32,7 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<FavoriteProvider>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -143,12 +145,6 @@ class _HomePage extends State<HomePage> {
                 child: ListView.builder(
                   itemCount: filteredData.length,
                   itemBuilder: (context, index) {
-                    if (filteredData.isEmpty) {
-                      return Center(
-                        child: Text(
-                            "No contacts found"), // Display a message when no contacts match the search
-                      );
-                    }
                     final item = filteredData[index] as Map;
                     final id = item['id'] as int;
                     return Column(
@@ -194,9 +190,14 @@ class _HomePage extends State<HomePage> {
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                                 subtitle: Text(item['email']),
-                                trailing: Icon(
-                                  Icons.send,
-                                  color: const Color(0xFF32BAA5),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    provider.toggleFavorite(id);
+                                  },
+                                  icon: provider.isExist(id)
+                                      ? Icon(Icons.star, color: Colors.yellow)
+                                      : Icon(Icons.star_outline,
+                                          color: const Color(0xFF32BAA5)),
                                 ),
                               )),
                         ),
@@ -230,7 +231,6 @@ class _HomePage extends State<HomePage> {
           filteredData = List.from(data);
         }
       } else {
-        // Filter contacts by first_name, last_name, or first_name and last_name together
         filteredData = data
             .where((item) => [
                   item['first_name'],
@@ -240,7 +240,6 @@ class _HomePage extends State<HomePage> {
                     name.toLowerCase().contains(trimmedQuery.toLowerCase())))
             .toList();
         if (showFavoritesOnly) {
-          // If we are filtering and showing favorites, apply the favorite filter as well
           filteredData =
               filteredData.where((item) => item['isFavorite']).toList();
         }
@@ -275,20 +274,19 @@ class _HomePage extends State<HomePage> {
         return AlertDialog(
           content: Text(
             'Are you sure you want to delete this contact?',
-            textAlign: TextAlign.center, // Center the text
+            textAlign: TextAlign.center,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(5.0), // Adjust the corner radius
-            side: BorderSide(color: Colors.white, width: 2.0), // Add a border
+            borderRadius: BorderRadius.circular(5.0),
+            side: BorderSide(color: Colors.white, width: 2.0),
           ),
           actions: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.center, // Center the buttons
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
                   onPressed: () async {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                     // Delete the contact
                     final url = 'https://reqres.in/api/users/$id';
                     final uri = Uri.parse(url);
@@ -312,7 +310,7 @@ class _HomePage extends State<HomePage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'No',
